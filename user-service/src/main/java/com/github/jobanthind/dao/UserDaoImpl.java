@@ -16,8 +16,7 @@ public class UserDaoImpl implements UserDao {
 
    @Override
    public List<User> getUsers() {
-      try (Connection connection = DataSourceConfig.getConnection()
-      ) {
+      try (Connection connection = DataSourceConfig.getConnection() ) {
          String getUserQuery = Constants.GET_ALL_USERS;
          Statement statement = connection.createStatement();
          ResultSet resultSet = statement.executeQuery(getUserQuery);
@@ -38,7 +37,24 @@ public class UserDaoImpl implements UserDao {
    }
 
    @Override
-   public void addNewUser(String name, int age, String phone) {
+   public void addNewUser(User user) {
+      try(Connection connection = DataSourceConfig.getConnection()){
+         String query = Constants.ADD_USER;
+         PreparedStatement statement = connection.prepareStatement(query);
+//         statement.setString(1,user.getId());
+         statement.setString(1,user.getName());
+         statement.setInt(2,user.getAge());
+         statement.setString(3,user.getPhone());
+         if(statement.executeUpdate()>0){
+            System.out.println("Addition Successful");
+         }
+         else{
+            throw new RuntimeException("Unable to perform addition operation");
+         }
+      }catch (Exception e){
+         System.out.println("Error occurred during addition operation");
+         throw new RuntimeException(e);
+      }
    }
 
    @Override
@@ -63,5 +79,20 @@ public class UserDaoImpl implements UserDao {
 
    @Override
    public void deleteUser(int id) {
+      try(Connection connection = DataSourceConfig.getConnection()){
+         String query = Constants.DELETE_USER;
+         PreparedStatement statement = connection.prepareStatement(query);
+         statement.setInt(1,id);
+         if(statement.executeUpdate()>0){
+            System.out.println("Deletion successfull");
+         }
+         else{
+            throw new RuntimeException("Unable to perform delete operation");
+         }
+      } catch (Exception e){
+         System.out.println("Error occurred during update operation");
+         throw new RuntimeException(e);
+      }
+
    }
 }

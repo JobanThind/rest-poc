@@ -26,6 +26,8 @@ public class UserMainClass {
       context.addServletMappingDecoded("/hello", HelloServlet.class.getName());
       tomcat.addServlet(contextPath, UserService.class.getName(), new UserService(new UserDaoImpl()));
       context.addServletMappingDecoded("/users/*", UserService.class.getName());
+
+
       tomcat.start();
       tomcat.getServer().await();
    }

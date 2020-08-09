@@ -14,7 +14,7 @@ import java.io.BufferedReader;
 import java.io.IOException;
 import java.util.List;
 
-@WebServlet(urlPatterns = {"/users/**"})
+@WebServlet(urlPatterns = {"/users/*"})
 public class UserService extends HttpServlet {
 
    private UserDao userDao;
@@ -36,6 +36,47 @@ public class UserService extends HttpServlet {
          resp.setStatus(500);
       }
    }
+   @Override
+   protected void doPost(HttpServletRequest req, HttpServletResponse resp)throws ServletException, IOException {
+      try{
+         BufferedReader reader = req.getReader();
+         StringBuilder builder = new StringBuilder();
+         String line;
+         while ((line = reader.readLine()) != null) {
+            builder.append(line);
+         }
+         JSONObject jsonObject = new JSONObject(builder.toString());
+         User user =new User();
+//          user.setId(jsonObject.getInt("id"));
+         user.setAge(jsonObject.getInt("age"));
+         user.setName(jsonObject.getString("name"));
+         user.setPhone(jsonObject.getString("phone"));
+         userDao.addNewUser(user);
+         resp.addHeader("content-type", "application/json");
+         resp.getWriter().print(builder.toString());
+      }catch (Exception e) {
+         e.printStackTrace();
+         resp.setStatus(500);
+      }
+
+
+   }
+   @Override
+   protected void doDelete(HttpServletRequest req, HttpServletResponse resp)throws ServletException, IOException {
+      try{
+         String path = req.getPathInfo();
+         String[] parts=path.split("/");
+         String userId = parts[parts.length - 1];
+         userDao.deleteUser(Integer.parseInt(userId));
+         resp.addHeader("content-type", "application/json");
+         resp.getWriter().print("Successfully deleted");
+      }catch (Exception e) {
+         e.printStackTrace();
+         resp.setStatus(500);
+      }
+
+
+   }
 
    @Override
    protected void doPut(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
@@ -43,12 +84,14 @@ public class UserService extends HttpServlet {
          String path = req.getPathInfo();
          String[] parts = path.split("/");
          String userId = parts[parts.length - 1];
+//         System.out.println(path);
          BufferedReader reader = req.getReader();
          StringBuilder builder = new StringBuilder();
          String line;
          while ((line = reader.readLine()) != null) {
             builder.append(line);
          }
+//         System.out.println(builder);
          JSONObject jsonObject = new JSONObject(builder.toString());
          User user = new User();
          user.setId(Integer.parseInt(userId));

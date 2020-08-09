@@ -8,7 +8,7 @@ public interface UserDao {
 
    List<User> getUsers();
 
-   void addNewUser(String name, int age, String phone);
+   void addNewUser(User user);
 
    void updateUser(int id, User user);
 
