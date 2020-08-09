@@ -26,5 +26,6 @@ hs_err_pid*
 .idea/
 temp/
 tomcat.8080/
-**/build/**
+**/build/
 **/out/**
+**/buildOutputCleanup
